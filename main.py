@@ -1,5 +1,6 @@
 import random, sys
 
+# Színek/Jelek 
 HEARTS   = chr(9829) # Kőr
 DIAMONDS = chr(9830) # Káró
 SPADES   = chr(9824) # Pikk
@@ -8,7 +9,13 @@ BACKSIDE = 'backside'
 
 
 def main():
-    money = 5000
+    while True:
+        try:
+            print("\n\nMekkora téttel szeretne fogadni?")
+            money = int(input('> '))
+            break
+        except:
+            print("Hiba, számot írjon be")
     while True: 
         # Addig tart a játék még van pénz
         # Vizsgálat
@@ -17,7 +24,7 @@ def main():
             sys.exit()
         #Fogadás
         print('Money:', money)
-        bet = fogadas(money)
+        bet = BetMoney(money)
 
         #Kártyaosztás
         deck = getDeck()
@@ -35,33 +42,33 @@ def main():
             #Játékos lépés választás
             move = getMove(playerHand, money - bet)
 
+            if move in ('H', 'D'):
+                # Új kártya
+                #newCard = deck.pop()
+                #rank, suit = newCard
+                #print(rank, suit)
+                playerHand.append(deck.pop())
+                if getHandValue(playerHand) > 21:
+                    #Bust
+                    continue
+
             # Játékos lépés választás kezelése:
-            if move == '2x':
+            if move == 'D':
                 # Ha duplázik akkor növelheti a tétet 
-                plusBet = fogadas(min(bet, (money - bet)))
+                plusBet = BetMoney(min(bet, (money - bet)))
                 bet += plusBet
                 print('Tétet megemelte: {}.'.format(bet))
                 print('Bet:', bet)
 
-            if move in ('+', '2x'):
-                # Hit/doubling down takes another card.
-                newCard = deck.pop()
-                rank, suit = newCard
-                print('You drew a {} of {}.'.format(rank, suit))
-                playerHand.append(newCard)
 
-                if getHandValue(playerHand) > 21:
-                    # The player has busted:
-                    continue
-
-            if move in ('-', '2x'):
-                # Stand/doubling down stops the player's turn.
+            if move in ('S', 'D'):
+                # megáll ha Stop vagy double van
                 break
 
-        # Handle the dealer's actions:
+        # Dealer
         if getHandValue(playerHand) <= 21:
             while getHandValue(dealerHand) < 17:
-                print('Dealer hits...')
+                print('Dealer húz...')
                 dealerHand.append(deck.pop())
                 displayHands(playerHand, dealerHand, False)
                 if getHandValue(dealerHand) > 21:
@@ -77,7 +84,7 @@ def main():
             print('Dealer bust! Te nyetél: ${}!'.format(bet))
             money += bet
         elif (playerValue > 21) or (playerValue < dealerValue):
-            print('Vesztettél')
+            print('Vesztettél!')
             money -= bet
         elif playerValue > dealerValue:
             print('Te nyertél: ${}!'.format(bet))
@@ -89,7 +96,7 @@ def main():
         print('\n')
 
 
-def fogadas(maxBet):
+def BetMoney(maxBet):
     while True:  
             print('Mennyivel szeretnél fogadni? (1-{}, or QUIT)'.format(maxBet))
             bet = input('> ').upper().strip()
@@ -125,12 +132,12 @@ def displayHands(playerHand, dealerHand, showDealerHand):
         # dealer első kártyája rejtett
         displayCards([BACKSIDE] + dealerHand[1:])
 
-    print('PLAYER:', getHandValue(playerHand))
+    print('Játékos:', getHandValue(playerHand))
     displayCards(playerHand)
 
 
 def getHandValue(cards):
-    #Kártya érték visszatérés
+    #Kártya érték 
     value = 0
     numberOfAces = 0
 
@@ -143,7 +150,7 @@ def getHandValue(cards):
         else:
             value += int(rank) 
     value = numberOfAces + value 
-    for i in range(numberOfAces):
+    for i in range(numberOfAces):   
         if value + 10 <= 21:
             value += 10
     return value
@@ -151,41 +158,35 @@ def getHandValue(cards):
 
 def displayCards(cards):
     rows = ['', '', '', '', '']  # sorokban megjelenítendő szöveg.
-
     for i, card in enumerate(cards):
-        rows[0] += ' ___  '  # Print the top line of the card.
+        rows[0] += ' ___  '  # Felső sor a kártyában
         if card == BACKSIDE:
-            # Print a card's back:
+            # Dealer kártya hátoldala
             rows[1] += '|## | '
             rows[2] += '|###| '
             rows[3] += '|_##| '
         else:
-            # Print the card's front:
-            rank, suit = card  # The card is a tuple data structure.
+            rank, suit = card
             rows[1] += '|{} | '.format(rank.ljust(2))
             rows[2] += '| {} | '.format(suit)
             rows[3] += '|_{}| '.format(rank.rjust(2, '_'))
-
-    # Print each row on the screen:
     for row in rows:
         print(row)
-
 
 def getMove(playerHand, money):
     """Bekéri hogy a következő lépést és vissza adja H vagy S vagy D"""
     while True:  
-        moves = ['+', '-']  
+        moves = ['H(úzás)', 'S(top)']  
         # A kártya húzás plusszban +
         # A megállj -
 
         # Ha két kártyája van és van még pénze tudja bővíteni a fogadás pénzét
         if len(playerHand) == 2 and money > 0:
-            moves.append('2x')
+            moves.append('D(upla)')
         movesPrint = ', '.join(moves)+": "
         move = input(movesPrint).upper()
-        if move in ('+', '-'):
-            return move  # stopp vagy hit
-        if move == '2x' and '2x' in moves:
+        if move in ('H', 'S'):
+            return move  # megáll vagy hit
+        if move == 'D' and 'D(upla)' in moves:
             return move  # duplázás
-
 main()
