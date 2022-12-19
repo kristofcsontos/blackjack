@@ -9,13 +9,8 @@ BACKSIDE = 'backside'
 
 
 def main():
-    while True:
-        try:
-            print("\n\nMekkora téttel szeretne fogadni?")
-            money = int(input('> '))
-            break
-        except:
-            print("Hiba, számot írjon be")
+    money = betMoney()
+    
     while True: 
         # Addig tart a játék még van pénz
         # Vizsgálat
@@ -189,4 +184,12 @@ def getMove(playerHand, money):
             return move  # megáll vagy hit
         if move == 'D' and 'D(upla)' in moves:
             return move  # duplázás
+def betMoney():
+    while True:
+        try:
+            print("\n\nMekkora téttel szeretne fogadni?")
+            money = int(input('> '))
+            return money
+        except:
+            print("Hiba, számot írjon be")
 main()
