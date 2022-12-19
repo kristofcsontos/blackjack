@@ -9,13 +9,7 @@ BACKSIDE = 'backside'
 
 
 def main():
-    while True:
-        try:
-            print("\n\nMekkora téttel szeretne fogadni?")
-            money = int(input('> '))
-            break
-        except:
-            print("Hiba, számot írjon be")
+    money = betMoney()
     while True: 
         # Addig tart a játék még van pénz
         # Vizsgálat
@@ -44,9 +38,6 @@ def main():
 
             if move in ('H', 'D'):
                 # Új kártya
-                #newCard = deck.pop()
-                #rank, suit = newCard
-                #print(rank, suit)
                 playerHand.append(deck.pop())
                 if getHandValue(playerHand) > 21:
                     #Bust
@@ -74,7 +65,7 @@ def main():
                 if getHandValue(dealerHand) > 21:
                     break 
                 input('Press Enter to continue...')
-                print('\n\n')
+                print('\n')
 
         #Felfordított dealer lapok
         displayHands(playerHand, dealerHand, True)
@@ -189,4 +180,12 @@ def getMove(playerHand, money):
             return move  # megáll vagy hit
         if move == 'D' and 'D(upla)' in moves:
             return move  # duplázás
+def betMoney():
+    while True:
+        try:
+            print("\n\nMekkora téttel szeretne fogadni?")
+            money = int(input('> '))
+            return money
+        except:
+            print("Hiba, számot írjon be")
 main()
