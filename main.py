@@ -10,6 +10,7 @@ BACKSIDE = 'backside'
 
 def main():
     money = betMoney()
+    
     while True: 
         # Addig tart a játék még van pénz
         # Vizsgálat
@@ -38,6 +39,9 @@ def main():
 
             if move in ('H', 'D'):
                 # Új kártya
+                #newCard = deck.pop()
+                #rank, suit = newCard
+                #print(rank, suit)
                 playerHand.append(deck.pop())
                 if getHandValue(playerHand) > 21:
                     #Bust
@@ -65,7 +69,7 @@ def main():
                 if getHandValue(dealerHand) > 21:
                     break 
                 input('Press Enter to continue...')
-                print('\n')
+                print('\n\n')
 
         #Felfordított dealer lapok
         displayHands(playerHand, dealerHand, True)
